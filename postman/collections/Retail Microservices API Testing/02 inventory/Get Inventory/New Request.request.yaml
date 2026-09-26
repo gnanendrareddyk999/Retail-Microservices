@@ -1,0 +1,90 @@
+$kind: http-request
+url: http://localhost:8082/inventory
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_10es}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response is an array\", function () {\r
+
+      \    pm.expect(json).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Inventory list exists\", function () {\r
+
+      \    pm.expect(json).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Inventory list is not empty\", function () {\r
+
+      \    pm.expect(json.length).to.be.greaterThan(0);\r
+
+      });\r
+
+      \r
+
+      if (json.length > 0) {\r
+
+      \r
+
+      \    pm.test(\"First inventory has ID\", function () {\r
+
+      \        pm.expect(json[0].id).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"First inventory has product name\", function () {\r
+
+      \        pm.expect(json[0].productName).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"First inventory has quantity\", function () {\r
+
+      \        pm.expect(json[0].quantity).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"First inventory has price\", function () {\r
+
+      \        pm.expect(json[0].price).to.exist;\r
+
+      \    });\r
+
+      }"
+    language: text/javascript
+order: 1790268452431

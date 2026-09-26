@@ -1,0 +1,154 @@
+$kind: http-request
+name: New Request
+url: http://localhost:8082/orders?from=2026-09-21&to=2026-09-26
+method: GET
+queryParams:
+  from: 2026-09-21
+  to: 2026-09-26
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0uc3}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response is an array\", function () {\r
+
+      \    pm.expect(json).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Retailer orders response exists\", function () {\r
+
+      \    pm.expect(json).to.exist;\r
+
+      });\r
+
+      \r
+
+      // Get filter dates from request URL\r
+
+      const fromDate = pm.request.url.query.get(\"from\");\r
+
+      const toDate = pm.request.url.query.get(\"to\");\r
+
+      \r
+
+      pm.test(\"From date exists\", function () {\r
+
+      \    pm.expect(fromDate).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"To date exists\", function () {\r
+
+      \    pm.expect(toDate).to.exist;\r
+
+      });\r
+
+      \r
+
+      json.forEach(function (order, index) {\r
+
+      \r
+
+      \    pm.test(\"Order \" + index + \" has ID\", function () {\r
+
+      \        pm.expect(order.id).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Order \" + index + \" has username\", function () {\r
+
+      \        pm.expect(order.username).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Order \" + index + \" has status\", function () {\r
+
+      \        pm.expect(order.status).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Order \" + index + \" has items\", function () {\r
+
+      \        pm.expect(order.items).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Order \" + index + \" items are array\", function () {\r
+
+      \        pm.expect(order.items).to.be.an(\"array\");\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Order \" + index + \" has grand total\", function () {\r
+
+      \        pm.expect(order.grandTotal).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    // Validate date range if createdAt is present\r
+
+      \    if (order.createdAt) {\r
+
+      \r
+
+      \        const orderDate = order.createdAt.substring(0, 10);\r
+
+      \r
+
+      \        pm.test(\r
+
+      \            \"Order \" + index + \" is within date range\",\r
+
+      \            function () {\r
+
+      \                pm.expect(orderDate >= fromDate).to.be.true;\r
+
+      \                pm.expect(orderDate <= toDate).to.be.true;\r
+
+      \            }\r
+
+      \        );\r
+
+      \    }\r
+
+      });"
+    language: text/javascript
+order: 3426853717285522

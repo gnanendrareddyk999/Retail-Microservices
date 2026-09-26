@@ -1,0 +1,55 @@
+$kind: http-request
+url: http://localhost:8081/auth/login
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \  \"username\": \"hk\",\r
+
+    \  \"password\": \"hk123\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"JWT token exists\", function () {\r
+
+      \    pm.expect(json.token).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"JWT token is not empty\", function () {\r
+
+      \    pm.expect(json.token).to.not.be.empty;\r
+
+      });\r
+
+      \r
+
+      pm.environment.set(\"token\", json.token);"
+    language: text/javascript
+order: 1790256711971

@@ -1,0 +1,59 @@
+$kind: collection
+variables:
+  - key: json_web_token_1cr1
+    secret: true
+    disabled: false
+  - key: json_web_token_0pqe
+    secret: true
+    disabled: false
+  - key: json_web_token_008f
+    secret: true
+    disabled: false
+  - key: json_web_token_04k2
+    secret: true
+    disabled: false
+  - key: json_web_token_0kih
+    secret: true
+    disabled: false
+  - key: json_web_token_0do6
+    secret: true
+    disabled: false
+  - key: json_web_token_0enk
+    secret: true
+    disabled: false
+  - key: json_web_token_01c7
+    secret: true
+    disabled: false
+  - key: json_web_token_0yl4
+    secret: true
+    disabled: false
+  - key: json_web_token_0aps
+    secret: true
+    disabled: false
+  - key: json_web_token_037i
+    secret: true
+    disabled: false
+  - key: json_web_token_0zi8
+    secret: true
+    disabled: false
+  - key: json_web_token_0jvm
+    secret: true
+    disabled: false
+  - key: json_web_token_15at
+    secret: true
+    disabled: false
+  - key: json_web_token_0val
+    secret: true
+    disabled: false
+  - key: json_web_token_12f9
+    secret: true
+    disabled: false
+  - key: json_web_token_012n
+    secret: true
+    disabled: false
+  - key: json_web_token_1azb
+    secret: true
+    disabled: false
+  - key: json_web_token_041w
+    secret: true
+    disabled: false

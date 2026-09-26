@@ -1,0 +1,77 @@
+$kind: http-request
+name: New Request
+url: http://localhost:8082/order-items
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_10es}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response is an array\", function () {\r
+
+      \    pm.expect(json).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order items response exists\", function () {\r
+
+      \    pm.expect(json).to.exist;\r
+
+      });\r
+
+      \r
+
+      json.forEach(function (item, index) {\r
+
+      \r
+
+      \    pm.test(\"Order item \" + index + \" has ID\", function () {\r
+
+      \        pm.expect(item.id).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Order item \" + index + \" has inventory ID\", function () {\r
+
+      \        pm.expect(item.inventoryId).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Order item \" + index + \" has quantity\", function () {\r
+
+      \        pm.expect(item.quantity).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      });"
+    language: text/javascript
+order: 4136895919349482

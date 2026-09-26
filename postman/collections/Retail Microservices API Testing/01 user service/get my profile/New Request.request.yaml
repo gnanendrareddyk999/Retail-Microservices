@@ -1,0 +1,44 @@
+$kind: http-request
+url: http://localhost:8081/users/me
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0uc3}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Username exists\", function () {\r
+
+      \    pm.expect(json.username).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Role exists\", function () {\r
+
+      \    pm.expect(json.role).to.exist;\r
+
+      });"
+    language: text/javascript
+order: 1790266073729

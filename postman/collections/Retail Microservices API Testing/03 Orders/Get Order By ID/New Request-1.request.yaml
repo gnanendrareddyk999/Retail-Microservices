@@ -1,0 +1,101 @@
+$kind: http-request
+name: New Request
+url: http://localhost:8082/orders/7
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0uc3}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response exists\", function () {\r
+
+      \    pm.expect(json).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order ID exists\", function () {\r
+
+      \    pm.expect(json.id).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order ID is 3\", function () {\r
+
+      \    pm.expect(String(json.id)).to.eql(\"3\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Username exists\", function () {\r
+
+      \    pm.expect(json.username).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order status exists\", function () {\r
+
+      \    pm.expect(json.status).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order items exist\", function () {\r
+
+      \    pm.expect(json.items).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order items are an array\", function () {\r
+
+      \    pm.expect(json.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order contains at least one item\", function () {\r
+
+      \    pm.expect(json.items.length).to.be.greaterThan(0);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Grand total exists\", function () {\r
+
+      \    pm.expect(json.grandTotal).to.exist;\r
+
+      });"
+    language: text/javascript
+order: 624874308973635

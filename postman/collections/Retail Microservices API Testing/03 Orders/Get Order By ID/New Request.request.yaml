@@ -1,0 +1,76 @@
+$kind: http-request
+url: http://localhost:8082/order-items/5
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_15at}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response exists\", function () {\r
+
+      \    pm.expect(json).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order item ID exists\", function () {\r
+
+      \    pm.expect(json.id).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order item ID is 5\", function () {\r
+
+      \    pm.expect(String(json.id)).to.eql(\"5\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Inventory ID exists\", function () {\r
+
+      \    pm.expect(json.inventoryId).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Quantity exists\", function () {\r
+
+      \    pm.expect(json.quantity).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Quantity is greater than zero\", function () {\r
+
+      \    pm.expect(json.quantity).to.be.greaterThan(0);\r
+
+      });"
+    language: text/javascript
+order: 1790317178789

@@ -1,0 +1,24 @@
+$kind: http-request
+name: New Request
+url: http://localhost:8082/inventory
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \  \"productName\": \"Laptop\",\r
+
+    \  \"description\": \"HP Business Laptop\",\r
+
+    \  \"quantity\": 10,\r
+
+    \  \"price\": 50000\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_10es}}"
+order: 2407644235473016

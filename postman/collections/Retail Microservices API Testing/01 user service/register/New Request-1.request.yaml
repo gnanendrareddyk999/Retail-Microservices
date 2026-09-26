@@ -1,0 +1,62 @@
+$kind: http-request
+name: New Request
+url: http://localhost:8081/auth/register
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \  \"username\": \"hr\",\r
+
+    \  \"password\": \"hr123\",\r
+
+    \  \"role\": \"RETAILER\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"User ID exists\", function () {\r
+
+      \    pm.expect(json.id).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Username exists\", function () {\r
+
+      \    pm.expect(json.username).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Role exists\", function () {\r
+
+      \    pm.expect(json.role).to.exist;\r
+
+      });"
+    language: text/javascript
+order: 3055005364519686

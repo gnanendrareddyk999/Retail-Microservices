@@ -1,0 +1,9 @@
+$kind: http-request
+name: New Request
+url: http://localhost:8082/inventory/777
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_10es}}"
+order: 3745330294880398

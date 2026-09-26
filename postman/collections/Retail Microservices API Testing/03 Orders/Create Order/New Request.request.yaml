@@ -1,0 +1,123 @@
+$kind: http-request
+url: http://localhost:8082/orders
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: javascript
+  content: "{\r
+
+    \  \"items\": [\r
+
+    \    {\r
+
+    \      \"inventoryId\": 5,\r
+
+    \      \"quantity\": 2\r
+
+    \    }\r
+
+    \  ]\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_041w}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Order ID exists\", function () {\r
+
+      \    pm.expect(json.id).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Username exists\", function () {\r
+
+      \    pm.expect(json.username).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order status exists\", function () {\r
+
+      \    pm.expect(json.status).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order status is PLACED\", function () {\r
+
+      \    pm.expect(json.status).to.eql(\"PLACED\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order items exist\", function () {\r
+
+      \    pm.expect(json.items).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order items are an array\", function () {\r
+
+      \    pm.expect(json.items).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Order contains at least one item\", function () {\r
+
+      \    pm.expect(json.items.length).to.be.greaterThan(0);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Grand total exists\", function () {\r
+
+      \    pm.expect(json.grandTotal).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.environment.set(\"order_id\", json.id);\r
+
+      \r
+
+      if (json.items && json.items.length > 0) {\r
+
+      \    pm.environment.set(\"order_item_id\", json.items[0].id);\r
+
+      }"
+    language: text/javascript
+order: 1790271779688

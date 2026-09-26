@@ -1,0 +1,89 @@
+$kind: http-request
+name: New Request
+url: http://localhost:8082/inventory/8
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_10es}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Inventory ID exists\", function () {\r
+
+      \    pm.expect(json.id).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Inventory ID matches requested ID\", function () {\r
+
+      \    pm.expect(String(json.id)).to.eql(\r
+
+      \        String(pm.environment.get(\"inventory_id\"))\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Product name exists\", function () {\r
+
+      \    pm.expect(json.productName).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Quantity exists\", function () {\r
+
+      \    pm.expect(json.quantity).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Price exists\", function () {\r
+
+      \    pm.expect(json.price).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Retailer username exists\", function () {\r
+
+      \    pm.expect(json.retailerUsername).to.exist;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Created date exists\", function () {\r
+
+      \    pm.expect(json.createdAt).to.exist;\r
+
+      });"
+    language: text/javascript
+order: 1679471310921467

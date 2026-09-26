@@ -1,0 +1,125 @@
+$kind: http-request
+name: New Request
+url: http://localhost:8082/inventory?from=2026-09-24
+method: GET
+queryParams:
+  from: 2026-09-24
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_10es}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response is an array\", function () {\r
+
+      \    pm.expect(json).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Inventory list exists\", function () {\r
+
+      \    pm.expect(json).to.exist;\r
+
+      });\r
+
+      \r
+
+      const fromDate = pm.environment.get(\"inventory_from_date\");\r
+
+      const toDate = pm.environment.get(\"inventory_to_date\");\r
+
+      \r
+
+      json.forEach(function (inventory, index) {\r
+
+      \r
+
+      \    pm.test(\"Inventory \" + index + \" has ID\", function () {\r
+
+      \        pm.expect(inventory.id).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Inventory \" + index + \" has product name\", function () {\r
+
+      \        pm.expect(inventory.productName).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Inventory \" + index + \" has quantity\", function () {\r
+
+      \        pm.expect(inventory.quantity).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Inventory \" + index + \" has price\", function () {\r
+
+      \        pm.expect(inventory.price).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    pm.test(\"Inventory \" + index + \" has created date\", function () {\r
+
+      \        pm.expect(inventory.createdAt).to.exist;\r
+
+      \    });\r
+
+      \r
+
+      \    if (fromDate && toDate && inventory.createdAt) {\r
+
+      \r
+
+      \        const createdDate = inventory.createdAt.substring(0, 10);\r
+
+      \r
+
+      \        pm.test(\r
+
+      \            \"Inventory \" + index + \" is within selected date range\",\r
+
+      \            function () {\r
+
+      \                pm.expect(createdDate >= fromDate).to.be.true;\r
+
+      \                pm.expect(createdDate <= toDate).to.be.true;\r
+
+      \            }\r
+
+      \        );\r
+
+      \    }\r
+
+      });"
+    language: text/javascript
+order: 3274035088798540

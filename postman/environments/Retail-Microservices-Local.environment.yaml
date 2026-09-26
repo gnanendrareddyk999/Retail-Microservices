@@ -1,0 +1,22 @@
+name: Retail-Microservices-Local
+values:
+  - key: user_base_url
+    value: ''
+  - key: retailer_base_url
+    value: ''
+  - key: token
+    secret: true
+  - key: inventory_id
+    value: ''
+  - key: order_id
+    value: ''
+  - key: order_item_id
+    value: ''
+  - key: inventory_from_date
+    value: ''
+  - key: inventory_to_date
+    value: ''
+  - key: json_web_token_0uc3
+    secret: true
+  - key: json_web_token_10es
+    secret: true

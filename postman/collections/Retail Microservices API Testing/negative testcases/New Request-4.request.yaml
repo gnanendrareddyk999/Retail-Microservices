@@ -1,0 +1,9 @@
+$kind: http-request
+name: New Request
+url: http://localhost:8082/orders/377
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0uc3}}"
+order: 4203720854022713
