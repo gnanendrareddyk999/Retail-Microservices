@@ -5,6 +5,9 @@ A Spring Boot based Retail Microservices application consisting of User Service 
 The application uses PostgreSQL for database management, JWT for authentication, Docker for containerization, Docker Compose for running all services together, and Postman for API testing.
 
 ---
+## GitHub Repository
+This project is maintained using Git and GitHub.
+---
 
 ## 1. Project Overview
 
