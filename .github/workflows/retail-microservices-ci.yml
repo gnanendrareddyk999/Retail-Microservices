@@ -143,6 +143,25 @@ jobs:
           echo "=== DOCKER STATUS ==="
           docker compose -f docker-compose.ci.yml ps
 
+      - name: Seed Postman test users
+        shell: bash
+        run: |
+          set -e
+
+          echo "=== Register CI USER ==="
+          curl -fsS -X POST http://localhost:8081/auth/register \
+            -H "Content-Type: application/json" \
+            -d '{"username":"hk","password":"hk123","role":"USER"}'
+
+          echo
+          echo "=== Register CI RETAILER ==="
+          curl -fsS -X POST http://localhost:8081/auth/register \
+            -H "Content-Type: application/json" \
+            -d '{"username":"hr","password":"hr123","role":"RETAILER"}'
+
+          echo
+          echo "CI test users registered successfully."
+
       - name: Install Newman
         run: npm install -g newman newman-reporter-htmlextra
 
