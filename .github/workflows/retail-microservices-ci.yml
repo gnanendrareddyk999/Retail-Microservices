@@ -76,7 +76,7 @@ jobs:
           DB_USERNAME: admin
           DB_PASSWORD: admin123
           JWT_SECRET: ci-test-secret-key-2026-retail-microservices-abcdefghijklmnopqrstuvwxyz
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5433/user_db
+          SPRING_DATASOURCE_URL: jdbc:postgresql://127.0.0.1:5433/user_db
         run: mvn -B clean package
 
       - name: Build and test Retailer Service
@@ -85,7 +85,7 @@ jobs:
           DB_USERNAME: admin
           DB_PASSWORD: admin123
           JWT_SECRET: ci-test-secret-key-2026-retail-microservices-abcdefghijklmnopqrstuvwxyz
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5433/retailer_db
+          SPRING_DATASOURCE_URL: jdbc:postgresql://127.0.0.1:5433/retailer_db
         run: mvn -B clean package
 
       - name: Build Docker images
