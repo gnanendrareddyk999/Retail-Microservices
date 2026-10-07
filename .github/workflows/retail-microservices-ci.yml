@@ -41,9 +41,10 @@ jobs:
       - name: Wait for PostgreSQL
         shell: bash
         run: |
-          for i in {1..30}; do
+          for i in {1..60}; do
             USER_DB_READY=false
             RETAILER_DB_READY=false
+            HOST_PORT_READY=false
 
             if docker compose -f docker-compose.ci.yml exec -T postgres pg_isready -U admin -d user_db >/dev/null 2>&1; then
               USER_DB_READY=true
@@ -53,13 +54,18 @@ jobs:
               RETAILER_DB_READY=true
             fi
 
-            if [ "$USER_DB_READY" = true ] && [ "$RETAILER_DB_READY" = true ]; then
-              echo "PostgreSQL user_db and retailer_db are ready."
+            if (echo > /dev/tcp/127.0.0.1/5433) >/dev/null 2>&1; then
+              HOST_PORT_READY=true
+            fi
+
+            if [ "$USER_DB_READY" = true ] && [ "$RETAILER_DB_READY" = true ] && [ "$HOST_PORT_READY" = true ]; then
+              echo "PostgreSQL databases and host port 5433 are ready."
               break
             fi
 
-            if [ "$i" -eq 30 ]; then
-              echo "PostgreSQL databases did not become ready."
+            if [ "$i" -eq 60 ]; then
+              echo "PostgreSQL or host port 5433 did not become ready."
+              docker compose -f docker-compose.ci.yml ps postgres
               docker compose -f docker-compose.ci.yml logs --no-color postgres
               exit 1
             fi
