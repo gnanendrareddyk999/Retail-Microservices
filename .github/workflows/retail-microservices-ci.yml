@@ -29,6 +29,7 @@ jobs:
         run: |
           sed 's/external: true/external: false/' docker-compose.yml > docker-compose.ci.yml
           sed -i '/^[[:space:]]*name: 586fd1702d68b0d8c952a5d9c02303520fcc5693dd85f6699adc907a98362e7e$/d' docker-compose.ci.yml
+          sed -i 's/"5432:5432"/"5433:5432"/' docker-compose.ci.yml
 
           echo "=== CI COMPOSE ==="
           cat docker-compose.ci.yml
