@@ -50,4 +50,20 @@ public interface OrderRepository
             @Param("retailerUsername")
             String retailerUsername
     );
+
+    @Query("""
+            SELECT DISTINCT o
+            FROM Order o
+            JOIN o.items i
+            WHERE i.retailerUsername = :retailerUsername
+              AND o.createdAt BETWEEN :start AND :end
+            """)
+    List<Order> findOrdersByRetailerUsernameAndCreatedAtBetween(
+            @Param("retailerUsername")
+            String retailerUsername,
+            @Param("start")
+            LocalDateTime start,
+            @Param("end")
+            LocalDateTime end
+    );
 }

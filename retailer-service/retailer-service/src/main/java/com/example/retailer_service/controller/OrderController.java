@@ -128,12 +128,30 @@ public ResponseEntity<Order> getOrderById(
     @PreAuthorize("hasRole('RETAILER')")
     public ResponseEntity<?> getRetailerOrders(
 
-            Authentication authentication) {
+            Authentication authentication,
+
+            @RequestParam(
+                    required = false
+            )
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate from,
+
+            @RequestParam(
+                    required = false
+            )
+            @DateTimeFormat(
+                    iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate to) {
 
         return ResponseEntity.ok(
 
                 orderService.getRetailerOrders(
-                        authentication.getName()
+                        authentication.getName(),
+                        from,
+                        to
                 )
 
         );

@@ -507,6 +507,46 @@ public Order getOrderById(
                 );
     }
 
+    public List<Order> getRetailerOrders(
+
+            String retailerUsername,
+
+            LocalDate from,
+
+            LocalDate to) {
+
+        if (from == null && to == null) {
+
+            return getRetailerOrders(
+                    retailerUsername
+            );
+        }
+
+        LocalDate startDate =
+                from != null
+                        ? from
+                        : LocalDate.of(2000, 1, 1);
+
+        LocalDate endDate =
+                to != null
+                        ? to
+                        : LocalDate.now();
+
+        validateDateRange(
+                startDate,
+                endDate
+        );
+
+        return orderRepository
+                .findOrdersByRetailerUsernameAndCreatedAtBetween(
+                        retailerUsername,
+                        startDate.atStartOfDay(),
+                        endDate.plusDays(1)
+                                .atStartOfDay()
+                                .minusNanos(1)
+                );
+    }
+
 
     // =====================================================
     // UPDATE STATUS

@@ -1,4 +1,4 @@
-﻿name: Retail Microservices CI
+name: Retail Microservices CI
 
 on:
   pull_request:
@@ -21,14 +21,6 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Build and test User Service
-        working-directory: user-service/user-service
-        run: mvn -B clean package
-
-      - name: Build and test Retailer Service
-        working-directory: retailer-service/retailer-service
-        run: mvn -B clean package
-
       - name: Verify Docker
         run: docker --version
 
@@ -37,31 +29,108 @@ jobs:
         run: |
           sed 's/external: true/external: false/' docker-compose.yml > docker-compose.ci.yml
           sed -i '/^[[:space:]]*name: 586fd1702d68b0d8c952a5d9c02303520fcc5693dd85f6699adc907a98362e7e$/d' docker-compose.ci.yml
+
           echo "=== CI COMPOSE ==="
           cat docker-compose.ci.yml
+
           docker compose -f docker-compose.ci.yml config
+
+      - name: Start PostgreSQL
+        run: docker compose -f docker-compose.ci.yml up -d postgres
+
+      - name: Wait for PostgreSQL
+        shell: bash
+        run: |
+          for i in {1..30}; do
+            USER_DB_READY=false
+            RETAILER_DB_READY=false
+
+            if docker compose -f docker-compose.ci.yml exec -T postgres pg_isready -U admin -d user_db >/dev/null 2>&1; then
+              USER_DB_READY=true
+            fi
+
+            if docker compose -f docker-compose.ci.yml exec -T postgres pg_isready -U admin -d retailer_db >/dev/null 2>&1; then
+              RETAILER_DB_READY=true
+            fi
+
+            if [ "$USER_DB_READY" = true ] && [ "$RETAILER_DB_READY" = true ]; then
+              echo "PostgreSQL user_db and retailer_db are ready."
+              break
+            fi
+
+            if [ "$i" -eq 30 ]; then
+              echo "PostgreSQL databases did not become ready."
+              docker compose -f docker-compose.ci.yml logs --no-color postgres
+              exit 1
+            fi
+
+            sleep 2
+          done
+
+          echo "=== POSTGRES STATUS ==="
+          docker compose -f docker-compose.ci.yml ps postgres
+
+      - name: Build and test User Service
+        working-directory: user-service/user-service
+        env:
+          DB_USERNAME: admin
+          DB_PASSWORD: admin123
+          JWT_SECRET: ci-test-secret-key-2026-retail-microservices-abcdefghijklmnopqrstuvwxyz
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5433/user_db
+        run: mvn -B clean package
+
+      - name: Build and test Retailer Service
+        working-directory: retailer-service/retailer-service
+        env:
+          DB_USERNAME: admin
+          DB_PASSWORD: admin123
+          JWT_SECRET: ci-test-secret-key-2026-retail-microservices-abcdefghijklmnopqrstuvwxyz
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5433/retailer_db
+        run: mvn -B clean package
 
       - name: Build Docker images
         run: docker compose -f docker-compose.ci.yml build
 
       - name: Start services
+        env:
+          DB_USERNAME: admin
+          DB_PASSWORD: admin123
+          JWT_SECRET: ci-test-secret-key-2026-retail-microservices-abcdefghijklmnopqrstuvwxyz
         run: docker compose -f docker-compose.ci.yml up -d
 
       - name: Wait for services
         shell: bash
         run: |
           for i in {1..30}; do
-            if curl -fsS http://localhost:8081 >/dev/null 2>&1 || curl -fsS http://localhost:8081/swagger-ui/index.html >/dev/null 2>&1; then
+            if curl -fsS http://localhost:8081/swagger-ui/index.html >/dev/null 2>&1 || \
+               curl -fsS http://localhost:8081/swagger-ui.html >/dev/null 2>&1; then
+              echo "User Service is ready."
               break
             fi
-            sleep 5
+
+            if [ "$i" -eq 30 ]; then
+              echo "User Service did not become ready."
+              docker compose -f docker-compose.ci.yml logs --no-color user-service
+              exit 1
+            fi
+
+            sleep 2
           done
 
           for i in {1..30}; do
-            if curl -fsS http://localhost:8082 >/dev/null 2>&1 || curl -fsS http://localhost:8082/swagger-ui/index.html >/dev/null 2>&1; then
+            if curl -fsS http://localhost:8082/swagger-ui/index.html >/dev/null 2>&1 || \
+               curl -fsS http://localhost:8082/swagger-ui.html >/dev/null 2>&1; then
+              echo "Retailer Service is ready."
               break
             fi
-            sleep 5
+
+            if [ "$i" -eq 30 ]; then
+              echo "Retailer Service did not become ready."
+              docker compose -f docker-compose.ci.yml logs --no-color retailer-service
+              exit 1
+            fi
+
+            sleep 2
           done
 
           echo "=== DOCKER STATUS ==="
@@ -73,6 +142,7 @@ jobs:
       - name: Run Newman API tests
         run: |
           mkdir -p reports
+
           newman run \
             "postman/collections/Retail-Microservices-CI.postman_collection_v2.1.json" \
             -e "postman/environments/Retail-Microservices-Login-Test.json" \
@@ -95,4 +165,5 @@ jobs:
 
       - name: Docker cleanup
         if: always()
-        run: docker compose -f docker-compose.ci.yml down --remove-orphans
+        run: |
+          docker compose -f docker-compose.ci.yml down --remove-orphans || true
