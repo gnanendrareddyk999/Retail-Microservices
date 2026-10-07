@@ -1,0 +1,98 @@
+﻿name: Retail Microservices CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build and test User Service
+        working-directory: user-service/user-service
+        run: mvn -B clean package
+
+      - name: Build and test Retailer Service
+        working-directory: retailer-service/retailer-service
+        run: mvn -B clean package
+
+      - name: Verify Docker
+        run: docker --version
+
+      - name: Prepare CI Docker Compose
+        shell: bash
+        run: |
+          sed 's/external: true/external: false/' docker-compose.yml > docker-compose.ci.yml
+          sed -i '/^[[:space:]]*name: 586fd1702d68b0d8c952a5d9c02303520fcc5693dd85f6699adc907a98362e7e$/d' docker-compose.ci.yml
+          echo "=== CI COMPOSE ==="
+          cat docker-compose.ci.yml
+          docker compose -f docker-compose.ci.yml config
+
+      - name: Build Docker images
+        run: docker compose -f docker-compose.ci.yml build
+
+      - name: Start services
+        run: docker compose -f docker-compose.ci.yml up -d
+
+      - name: Wait for services
+        shell: bash
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:8081 >/dev/null 2>&1 || curl -fsS http://localhost:8081/swagger-ui/index.html >/dev/null 2>&1; then
+              break
+            fi
+            sleep 5
+          done
+
+          for i in {1..30}; do
+            if curl -fsS http://localhost:8082 >/dev/null 2>&1 || curl -fsS http://localhost:8082/swagger-ui/index.html >/dev/null 2>&1; then
+              break
+            fi
+            sleep 5
+          done
+
+          echo "=== DOCKER STATUS ==="
+          docker compose -f docker-compose.ci.yml ps
+
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Run Newman API tests
+        run: |
+          mkdir -p reports
+          newman run \
+            "postman/collections/Retail-Microservices-CI.postman_collection_v2.1.json" \
+            -e "postman/environments/Retail-Microservices-Login-Test.json" \
+            -r cli,htmlextra \
+            --reporter-htmlextra-export "reports/newman-report.html"
+
+      - name: Upload Newman HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-html-report
+          path: reports/newman-report.html
+          if-no-files-found: warn
+
+      - name: Show Docker logs on failure
+        if: failure()
+        run: |
+          docker compose -f docker-compose.ci.yml ps
+          docker compose -f docker-compose.ci.yml logs --no-color
+
+      - name: Docker cleanup
+        if: always()
+        run: docker compose -f docker-compose.ci.yml down --remove-orphans

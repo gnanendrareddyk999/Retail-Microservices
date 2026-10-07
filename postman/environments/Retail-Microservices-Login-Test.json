@@ -1,0 +1,24 @@
+{
+  "_": {
+    "postman_variable_scope": "environment",
+    "postman_exported_at": "2026-10-06T16:58:23.372Z",
+    "postman_exported_using": "Newman/6.2.2"
+  },
+  "id": "d572569b-b9ad-4ad4-aee8-54cff05cdf2e",
+  "name": "environment",
+  "values": [
+    {
+      "type": "any",
+      "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJoayIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzkxMzA2MTYzLCJleHAiOjE3OTEzMDk3NjN9.fzbKhkINvWZ5ZE5NLQJnebyvBSH7FOf3gzsQRfxD1-_2py_yaE4E9R4iSgLynAHi",
+      "key": "json_web_token_0uc3"
+    },
+    {
+      "type": "any",
+      "value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJociIsInJvbGUiOiJSRVRBSUxFUiIsImlhdCI6MTc5MTMwNjE2MywiZXhwIjoxNzkxMzA5NzYzfQ.tFZqfhfB-5i-eNl9mUSk1GlvgGZT6MDsw1Tqi_ixH2OQ1-B5xX3bmXJwWfQxpMDU",
+      "key": "json_web_token_10es"
+    }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-10-06T17:02:43.760Z",
+  "_postman_exported_using": "Newman/6.2.2"
+}
