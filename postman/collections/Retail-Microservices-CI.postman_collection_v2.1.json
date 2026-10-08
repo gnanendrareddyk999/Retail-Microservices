@@ -802,7 +802,7 @@
                                                                                                      "    pm.response.to.be.json;",
                                                                                                      "});",
                                                                                                      "const json = pm.response.json();",
-                                                                                                     "const item = json.find(x =\u003e Number(x.quantity) \u003e 0 \u0026\u0026 x.id != null);",
+                                                                                                     "const item = json.find(x =\u003e Number(x.quantity) \u003e 0 \u0026\u0026 x.id != null \u0026\u0026 String(x.retailerUsername).toLowerCase() === \"hr\");",
                                                                                                      "pm.test(\"Retailer-owned usable inventory exists\", function () {",
                                                                                                      "    pm.expect(item).to.exist;",
                                                                                                      "});",
@@ -944,7 +944,7 @@
                                                                                     "bearer":  [
                                                                                                    {
                                                                                                        "key":  "token",
-                                                                                                       "value":  "{{json_web_token_0uc3}}",
+                                                                                                       "value":  "{{json_web_token_10es}}",
                                                                                                        "type":  "string"
                                                                                                    }
                                                                                                ]
@@ -1917,3 +1917,7 @@
                      }
                  ]
 }
+
+
+
+
