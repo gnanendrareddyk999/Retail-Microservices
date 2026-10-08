@@ -177,7 +177,7 @@ jobs:
 
       - name: Upload Newman HTML report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: newman-html-report
           path: reports/newman-report.html
