@@ -49,3 +49,5 @@ The application also uses:
                  +---------+---------+
                  |                   |
               user_db           retailer_db
+### CI Pull Request Verification
+GitHub Actions CI is configured for pull requests and pushes to the master branch.
